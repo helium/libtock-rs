@@ -3,9 +3,13 @@ name = "tock"
 version = "0.1.0"
 authors = ["Tock Project Developers <tock-dev@googlegroups.com>"]
 license = "MIT/Apache-2.0"
+build = "build.rs"
 
 [dependencies]
 linked_list_allocator = {git = "https://github.com/phil-opp/linked-list-allocator"}
+
+[build-dependencies]
+gcc = { version = "0.3", features = ["parallel"] }
 
 [profile.dev]
 panic = "abort"

@@ -4,25 +4,15 @@
  * is not known. Therefore, this script over provisions space on some platforms.
  */
 
-/* Memory Spaces Definitions, 448K flash, 64K ram */
-PROG_LENGTH = 0x00040000;
-RAM_LENGTH  = 0x00010000;
-
 ENTRY(_start)
-
-/* Note: Because apps are relocated, the FLASH address here acts as a sentinel
- * value for relocation fixup routines. The application loader will select the
- * actual location in flash where the app is placed.
- */
-MEMORY {
-    FLASH (rx) : ORIGIN = 0x00040030, LENGTH = PROG_LENGTH
-    SRAM (RWX) : ORIGIN = 0x00000000, LENGTH = RAM_LENGTH
-}
 
 SECTIONS {
 /* Text section, Code! */
     .text :
     {
+        LONG(_data);
+        LONG(_bss);
+        LONG(_sram_end);
         _text = .;
         KEEP (*(.text._start))
         *(.text*)
@@ -30,7 +20,7 @@ SECTIONS {
 
         /* C++ exception unwinding information */
         *(.ARM.extab* .gnu.linkonce.armextab.*)
-    } > FLASH =0xFF
+    }
 
 /* ARM Exception support
  *
@@ -46,22 +36,20 @@ SECTIONS {
     {
       /* (C++) Index entries for section unwinding */
       *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-    } > FLASH
+    }
     PROVIDE_HIDDEN (__exidx_end = .);
-
-/* Beginning of SRAM */
-    _sram_start = .;
 
 /* Global Offset Table */
     .got :
     {
+        _data = .;
         _got = .;
         *(.got*)
         _egot = .;
         _plt = .;
         *(.got.plt*)
         _eplt = .;
-    } > SRAM AT > FLASH
+    }
 
 /* Data section, static initialized variables
  *  Note: This is placed in Flash after the text section, but needs to be
@@ -69,19 +57,17 @@ SECTIONS {
  */
     .data :
     {
-        _data = .;
         KEEP(*(.data*))
-        _edata = .;
-    } > SRAM AT > FLASH
+    }
+    _edata = .;
 
 /* BSS section, static uninitialized variables */
     .bss :
     {
-        _bss = .;
+      _bss = .;
         KEEP(*(.bss*))
         *(COMMON)
-        _ebss = .;
-    } > SRAM
+    }
 
 /*
  * __NOTE__: The following symbols are used only to pass information
@@ -98,21 +84,7 @@ SECTIONS {
         _stack = .;
         . += 1024;
         _estack = .;
-    } > SRAM
-
-    .app_heap :
-    {
-        _app_heap = .;
-        . += 1024;
-        _eapp_heap = .;
-    } > SRAM
-
-    .kernel_heap :
-    {
-        _kernel_heap = .;
-        . += 1024;
-        _ekernel_heap = .;
-    } > SRAM
+    }
 
     _sram_end = .;
 }
