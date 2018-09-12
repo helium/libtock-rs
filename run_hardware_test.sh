@@ -4,7 +4,10 @@
 
 set -eux
 
-yes 0|tockloader uninstall --jlink --arch cortex-m4 --board nrf52dk --jtag-device nrf52 --app-address 0x20000 || true
+# use config file to create config or pull in pre-existing one
+source board_config.sh
+
+yes 0|tockloader uninstall --jlink ${TOCKLOADER_ARGS} || true
 
 ./run_example.sh hardware_test_server --dont-clear-apps
 ./run_example.sh hardware_test --dont-clear-apps
