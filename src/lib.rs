@@ -33,6 +33,8 @@ pub mod shared_memory;
 pub mod simple_ble;
 pub mod temperature;
 pub mod timer;
+pub mod uart;
+
 
 #[cfg(target_arch = "arm")]
 pub mod entry_point;

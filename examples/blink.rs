@@ -2,13 +2,21 @@
 #![feature(alloc)]
 
 extern crate tock;
+extern crate alloc;
+
 
 use tock::led;
 use tock::timer;
 use tock::timer::Duration;
+// use alloc::string::String;
+// use tock::console::Console;
+
 
 fn main() {
     let num_leds = led::count();
+
+    //let mut console = Console::new();
+    //console.write(String::from("Started Blinky\r\n"));
 
     // Blink the LEDs in a binary count pattern and scale
     // to the number of LEDs on the board.
